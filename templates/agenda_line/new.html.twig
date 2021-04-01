@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New AgendaLine{% endblock %}
+
+{% block body %}
+    <h1>Create new AgendaLine</h1>
+
+    {{ include('agenda_line/_form.html.twig') }}
+
+    <a href="{{ path('agenda_line_index') }}">back to list</a>
+{% endblock %}

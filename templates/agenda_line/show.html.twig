@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}AgendaLine{% endblock %}
+
+{% block body %}
+    <h1>AgendaLine</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ agenda_line.id }}</td>
+            </tr>
+            <tr>
+                <th>Date</th>
+                <td>{{ agenda_line.date ? agenda_line.date|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Notes</th>
+                <td>{{ agenda_line.notes }}</td>
+            </tr>
+            <tr>
+                <th>CreatedAt</th>
+                <td>{{ agenda_line.createdAt ? agenda_line.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>UpdatedAt</th>
+                <td>{{ agenda_line.updatedAt ? agenda_line.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('agenda_line_index') }}">back to list</a>
+
+    <a href="{{ path('agenda_line_edit', {'id': agenda_line.id}) }}">edit</a>
+
+    {{ include('agenda_line/_delete_form.html.twig') }}
+{% endblock %}

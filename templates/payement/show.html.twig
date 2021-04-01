@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Payement{% endblock %}
+
+{% block body %}
+    <h1>Payement</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ payement.id }}</td>
+            </tr>
+            <tr>
+                <th>Status</th>
+                <td>{{ payement.status ? payement.status|join(', ') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Amount</th>
+                <td>{{ payement.amount }}</td>
+            </tr>
+            <tr>
+                <th>CreatedAt</th>
+                <td>{{ payement.createdAt ? payement.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>UpdatedAt</th>
+                <td>{{ payement.updatedAt ? payement.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('payement_index') }}">back to list</a>
+
+    <a href="{{ path('payement_edit', {'id': payement.id}) }}">edit</a>
+
+    {{ include('payement/_delete_form.html.twig') }}
+{% endblock %}

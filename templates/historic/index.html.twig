@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Historic index{% endblock %}
+
+{% block body %}
+    <h1>Historic index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Type</th>
+                <th>Contact</th>
+                <th>CreatedAt</th>
+                <th>UpdatedAt</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for historic in historics %}
+            <tr>
+                <td>{{ historic.id }}</td>
+                <td>{{ historic.type ? historic.type|join(', ') : '' }}</td>
+                <td>{{ historic.contact }}</td>
+                <td>{{ historic.createdAt ? historic.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ historic.updatedAt ? historic.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('historic_show', {'id': historic.id}) }}">show</a>
+                    <a href="{{ path('historic_edit', {'id': historic.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('historic_new') }}">Create new</a>
+{% endblock %}

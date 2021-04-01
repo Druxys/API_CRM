@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}AgendaLine index{% endblock %}
+
+{% block body %}
+    <h1>AgendaLine index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Date</th>
+                <th>Notes</th>
+                <th>CreatedAt</th>
+                <th>UpdatedAt</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for agenda_line in agenda_lines %}
+            <tr>
+                <td>{{ agenda_line.id }}</td>
+                <td>{{ agenda_line.date ? agenda_line.date|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ agenda_line.notes }}</td>
+                <td>{{ agenda_line.createdAt ? agenda_line.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ agenda_line.updatedAt ? agenda_line.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('agenda_line_show', {'id': agenda_line.id}) }}">show</a>
+                    <a href="{{ path('agenda_line_edit', {'id': agenda_line.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('agenda_line_new') }}">Create new</a>
+{% endblock %}
