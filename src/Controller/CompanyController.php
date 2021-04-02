@@ -4,79 +4,119 @@ namespace App\Controller;
 
 use App\Entity\Company;
 use App\Form\CompanyType;
+use App\Form\ContactType;
 use App\Repository\CompanyRepository;
+use App\Service\SerializerService;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('/company')]
 class CompanyController extends AbstractController
 {
-    #[Route('/', name: 'company_index', methods: ['GET'])]
-    public function index(CompanyRepository $companyRepository): Response
+    private SerializerService $serializerService;
+
+    public function __construct(SerializerService $serializer)
     {
-        return $this->render('company/index.html.twig', [
-            'companies' => $companyRepository->findAll(),
-        ]);
+        $this->serializerService = $serializer;
     }
 
-    #[Route('/new', name: 'company_new', methods: ['GET', 'POST'])]
-    public function new(Request $request): Response
+
+    #[Route('/new', name: 'company_new', methods: ['POST'])]
+    public function new(Request $request, ValidatorInterface $validator, EntityManagerInterface $em, UserPasswordEncoderInterface $encoder): JsonResponse
     {
         $company = new Company();
         $form = $this->createForm(CompanyType::class, $company);
-        $form->handleRequest($request);
+        $data = json_decode($request->getContent(), true);
+        $form->submit($data);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($company);
-            $entityManager->flush();
+        $validate = $validator->validate($company, null, 'Company');
+        if (count($validate) !== 0) {
+            foreach ($validate as $error) {
+                return new JsonResponse("Bad request", Response::HTTP_BAD_REQUEST);
+            }
+        }
+        $em->persist($company);
+        $em->flush();
+        return new JsonResponse('Company created', Response::HTTP_OK);
+    }
 
-            return $this->redirectToRoute('company_index');
+    /**
+     * @Route("/get", name="User", methods={"GET"})
+     * @param CompanyRepository $companyRepository
+     * @param SerializerInterface $serializer
+     * @param Request $request
+     * @return JsonResponse
+     *
+     * Gére le get avec un ou plusieur champs (tout les champs possible dans l'entité) et le getall si rien n'est renseigné
+     */
+    public function find(CompanyRepository $companyRepository, SerializerInterface $serializer, Request $request)
+    {
+        $filter = [];
+        $em = $this->getDoctrine()->getManager();
+        $metadata = $em->getClassMetadata(User::class)->getFieldNames();
+        $content = (array)json_decode($request->getContent());
+        foreach ($metadata as $value) {
+            if (isset($content[$value])) {
+                $filter[$value] = $content[$value];
+            }
+        }
+        return JsonResponse::fromJsonString($serializer->serialize($companyRepository->findBy($filter), "json"), Response::HTTP_OK);
+    }
+
+    #[Route('/{id}/edit', name: 'company_edit', methods: ['PUT'])]
+    public function edit(Request $request, Company $company = null, EntityManagerInterface $em, ValidatorInterface $validator): Response
+    {
+        if (!$company) {
+            return new JsonResponse("Contact not found", Response::HTTP_BAD_REQUEST);
         }
 
-        return $this->render('company/new.html.twig', [
-            'company' => $company,
-            'form' => $form->createView(),
-        ]);
+        $form = $this->createForm(ContactType::class, $company);
+        return $this->validAndInsert($request, $form, $validator, $company, $em) ?
+            new JsonResponse("Contact updated", Response::HTTP_OK) :
+            new JsonResponse("Bad request", Response::HTTP_BAD_REQUEST);
     }
 
-    #[Route('/{id}', name: 'company_show', methods: ['GET'])]
-    public function show(Company $company): Response
-    {
-        return $this->render('company/show.html.twig', [
-            'company' => $company,
-        ]);
-    }
-
-    #[Route('/{id}/edit', name: 'company_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Company $company): Response
-    {
-        $form = $this->createForm(CompanyType::class, $company);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
-
-            return $this->redirectToRoute('company_index');
-        }
-
-        return $this->render('company/edit.html.twig', [
-            'company' => $company,
-            'form' => $form->createView(),
-        ]);
-    }
-
-    #[Route('/{id}', name: 'company_delete', methods: ['POST'])]
+    #[Route('/{id}', name: 'company_delete', methods: ['DELETE'])]
     public function delete(Request $request, Company $company): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$company->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $company->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($company);
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('company_index');
+        return new JsonResponse('Company deleted', Response::HTTP_OK);
+    }
+
+    /**
+     * @param Request $request
+     * @param FormInterface $form
+     * @param ValidatorInterface $validator
+     * @param Company $company
+     * @param EntityManagerInterface $em
+     * @return boolean
+     */
+    public function validAndInsert(Request $request, FormInterface $form, ValidatorInterface $validator, Company $company, EntityManagerInterface $em): bool
+    {
+        $json_decode = json_decode($request->getContent(), true);
+        $form->submit($json_decode);
+        $validate = $validator->validate($company, null, 'Register');
+        if (count($validate) !== 0) {
+            foreach ($validate as $error) {
+                return false;
+            }
+        }
+        $em->persist($company);
+        $em->flush();
+
+        return true;
     }
 }
