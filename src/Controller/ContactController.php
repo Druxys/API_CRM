@@ -51,6 +51,7 @@ class ContactController extends AbstractController
             return new JsonResponse("Company not found", Response::HTTP_BAD_REQUEST);
         }
         $contact = new Contact();
+        $contact->setCompany($company);
         $form = $this->createForm(ContactType::class, $contact);
         return $this->validAndInsert($request, $form, $validator, $contact, $em) ?
             new JsonResponse("Contact created", Response::HTTP_OK) :
