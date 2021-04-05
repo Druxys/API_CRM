@@ -22,7 +22,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class ContactController extends AbstractController
 {
     /**
-     * @Route("/get", name="User", methods={"GET"})
+     * @Route("/get", name="Contact", methods={"GET"})
      * @param ContactRepository $contactRepository
      * @param SerializerInterface $serializer
      * @param Request $request
@@ -58,7 +58,7 @@ class ContactController extends AbstractController
             new JsonResponse("Bad request", Response::HTTP_BAD_REQUEST);
     }
 
-    #[Route('/{id}/edit', name: 'contact_edit', methods: ['POST'])]
+    #[Route('/{id}/edit', name: 'contact_edit', methods: ['PUT'])]
     public function edit(Request $request, Contact $contact = null, EntityManagerInterface $em, ValidatorInterface $validator): Response
     {
         if (!$contact) {
@@ -71,7 +71,7 @@ class ContactController extends AbstractController
             new JsonResponse("Bad request", Response::HTTP_BAD_REQUEST);
     }
 
-    #[Route('/{id}', name: 'contact_delete', methods: ['POST'])]
+    #[Route('/{id}', name: 'contact_delete', methods: ['DELETE'])]
     public function delete(Request $request, Contact $contact = null): Response
     {
         if (!$contact) {
