@@ -21,7 +21,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class DocumentController extends AbstractController
 {
     /**
-     * @Route("/get", name="User", methods={"GET"})
+     * @Route("/get", name="Document", methods={"GET"})
      * @param DocumentRepository $DocumentRepository
      * @param SerializerInterface $serializer
      * @param Request $request
@@ -57,7 +57,7 @@ class DocumentController extends AbstractController
             new JsonResponse("Bad request", Response::HTTP_BAD_REQUEST);
     }
 
-    #[Route('/{id}/edit', name: 'document_edit', methods: ['POST'])]
+    #[Route('/{id}/edit', name: 'document_edit', methods: ['PUT'])]
     public function edit(Request $request, Document $document = null, EntityManagerInterface $em, ValidatorInterface $validator): Response
     {
         if (!$document) {
@@ -70,14 +70,14 @@ class DocumentController extends AbstractController
             new JsonResponse("Bad request", Response::HTTP_BAD_REQUEST);
     }
 
-    #[Route('/{id}', name: 'document_delete', methods: ['POST'])]
+    #[Route('/{id}', name: 'document_delete', methods: ['DELETE'])]
     public function delete(Request $request, Document $document = null): Response
     {
         if (!$document) {
             return new JsonResponse("Document not found", Response::HTTP_BAD_REQUEST);
         }
         $entityManager = $this->getDoctrine()->getManager();
-        $entityManager->remove($contact);
+        $entityManager->remove($document);
         $entityManager->flush();
         return new JsonResponse('Document deleted', Response::HTTP_OK);
     }
