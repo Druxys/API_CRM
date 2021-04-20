@@ -47,7 +47,7 @@ class CompanyController extends AbstractController
     }
 
     /**
-     * @Route("/get", name="company", methods={"GET"})
+     * @Route("/get", name="company", methods={"POST"})
      * @param CompanyRepository $companyRepository
      * @param SerializerInterface $serializer
      * @param Request $request
