@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Company;
+use App\Entity\Historic;
+use App\Entity\User;
 use App\Form\CompanyType;
 use App\Form\ContactType;
 use App\Repository\CompanyRepository;
@@ -21,12 +23,12 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 #[Route('/company')]
 class CompanyController extends AbstractController
 {
-    private SerializerService $serializerService;
-
-    public function __construct(SerializerService $serializer)
-    {
-        $this->serializerService = $serializer;
-    }
+//    private SerializerService $serializerService;
+//
+//    public function __construct(SerializerService $serializer)
+//    {
+//        $this->serializerService = $serializer;
+//    }
 
 
     #[Route('/new', name: 'company_new', methods: ['POST'])]
@@ -119,4 +121,18 @@ class CompanyController extends AbstractController
 
         return true;
     }
+
+
+    public function createHistoric(Company $company, User $user, $type, $contact) {
+        $historic = new Historic();
+        $em = $this->getDoctrine()->getManager();
+        $historic->setCompany($company);
+        $historic->setUsers($user);
+        $historic->setType($type);
+        $historic->setContact($contact);
+        $em->persist($historic);
+        $em->flush();
+    }
+
+
 }
