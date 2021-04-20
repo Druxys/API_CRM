@@ -21,7 +21,7 @@ class MailController extends AbstractController
                 // On attribue l'expéditeur
                 ->setFrom($content['email'])
                 // On attribue le destinataire
-                ->setTo('votre@adresse.fr')
+                ->setTo('projet.nfactory@gmail.com')
                 // On crée le texte avec la vue
                 ->setBody(
                     $this->renderView(
