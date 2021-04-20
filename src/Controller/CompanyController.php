@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Company;
+use App\Entity\Historic;
+use App\Entity\User;
 use App\Form\CompanyType;
 use App\Form\ContactType;
 use App\Repository\CompanyRepository;
@@ -127,4 +129,16 @@ class CompanyController extends AbstractController
 
         return $serializer->serialize($objet, 'json');
     }
+
+    public function createHistoric(Company $company, User $user, $type, $contact) {
+        $historic = new Historic();
+        $em = $this->getDoctrine()->getManager();
+        $historic->setCompany($company);
+        $historic->setUsers($user);
+        $historic->setType($type);
+        $historic->setContact($contact);
+        $em->persist($historic);
+        $em->flush();
+    }
+
 }
