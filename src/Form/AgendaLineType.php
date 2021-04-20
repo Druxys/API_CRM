@@ -14,9 +14,7 @@ class AgendaLineType extends AbstractType
         $builder
             ->add('date')
             ->add('notes')
-            ->add('createdAt')
-            ->add('updatedAt')
-            ->add('agenda')
+            ->add('contact')
         ;
     }
 
