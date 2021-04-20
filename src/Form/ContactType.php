@@ -18,10 +18,6 @@ class ContactType extends AbstractType
             ->add('phone_number')
             ->add('job')
             ->add('notes')
-            ->add('createdAt')
-            ->add('updatedAt')
-            ->add('agendaLine')
-            ->add('company')
         ;
     }
 

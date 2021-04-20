@@ -6,7 +6,6 @@ use App\Entity\Company;
 use App\Form\CompanyType;
 use App\Form\ContactType;
 use App\Repository\CompanyRepository;
-use App\Service\SerializerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
@@ -15,19 +14,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('/company')]
 class CompanyController extends AbstractController
 {
-    private SerializerService $serializerService;
-
-    public function __construct(SerializerService $serializer)
-    {
-        $this->serializerService = $serializer;
-    }
-
 
     #[Route('/new', name: 'company_new', methods: ['POST'])]
     public function new(Request $request, ValidatorInterface $validator, EntityManagerInterface $em, UserPasswordEncoderInterface $encoder): JsonResponse
@@ -49,7 +45,7 @@ class CompanyController extends AbstractController
     }
 
     /**
-     * @Route("/get", name="User", methods={"GET"})
+     * @Route("/get", name="company", methods={"GET"})
      * @param CompanyRepository $companyRepository
      * @param SerializerInterface $serializer
      * @param Request $request
@@ -61,14 +57,14 @@ class CompanyController extends AbstractController
     {
         $filter = [];
         $em = $this->getDoctrine()->getManager();
-        $metadata = $em->getClassMetadata(User::class)->getFieldNames();
+        $metadata = $em->getClassMetadata(Company::class)->getFieldNames();
         $content = (array)json_decode($request->getContent());
         foreach ($metadata as $value) {
             if (isset($content[$value])) {
                 $filter[$value] = $content[$value];
             }
         }
-        return JsonResponse::fromJsonString($serializer->serialize($companyRepository->findBy($filter), "json"), Response::HTTP_OK);
+        return JsonResponse::fromJsonString($this->serializeJson($companyRepository->findBy($filter)), Response::HTTP_OK);
     }
 
     #[Route('/{id}/edit', name: 'company_edit', methods: ['PUT'])]
@@ -118,5 +114,17 @@ class CompanyController extends AbstractController
         $em->flush();
 
         return true;
+    }
+
+    private function serializeJson($objet){
+        $defaultContext = [
+            AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object, $format, $context) {
+                return $object->getName();
+            },
+        ];
+        $normalizer = new ObjectNormalizer(null, null, null, null, null, null, $defaultContext);
+        $serializer = new Serializer([$normalizer], [new JsonEncoder()]);
+
+        return $serializer->serialize($objet, 'json');
     }
 }
