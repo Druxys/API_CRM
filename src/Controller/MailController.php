@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Form\MailInvoiceType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -10,12 +11,14 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class MailController extends AbstractController
 {
-    #[Route('/mail', name: 'mail')]
-    public function index(Request $request,\Swift_Mailer $mailer): Response
+    #[Route('/mail', name: 'mail', methods: ['POST'])]
+    public function index(Request $request, \Swift_Mailer $mailer): Response
     {
-        $content = json_decode($request->getContent(),true);
+        $editForm = $this->createForm(MailInvoiceType::class);
+//        $editForm->bind($request);
+        $editForm->handleRequest($request);
 
-        if ($content) {
+        if ($editForm->isSubmitted() && $editForm->isValid()) {
             // On crée le message
             $message = (new \Swift_Message('Nouveau contact'))
                 // On attribue l'expéditeur
@@ -29,13 +32,11 @@ class MailController extends AbstractController
                     ),
                     'text/html'
                 )
-                ->attach(\Swift_Attachment::fromPath($content['pdf']))
-            ;
+                ->attach(\Swift_Attachment::fromPath($content['pdf']));
             $mailer->send($message);
-        } else {
-            return new JsonResponse('empty', Response::HTTP_BAD_REQUEST);
+            return new JsonResponse('mail send', Response::HTTP_OK);
+
         }
 
-        return new JsonResponse('mail send', Response::HTTP_OK);
     }
 }
