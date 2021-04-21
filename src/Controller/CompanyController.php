@@ -6,7 +6,6 @@ use App\Entity\Company;
 use App\Entity\Historic;
 use App\Entity\User;
 use App\Form\CompanyType;
-use App\Form\ContactType;
 use App\Repository\CompanyRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
