@@ -22,7 +22,7 @@ class MailController extends AbstractController
             // On crée le message
             $message = (new \Swift_Message('Nouveau contact'))
                 // On attribue l'expéditeur
-                ->setFrom($content['email'])
+                ->setFrom($editForm['email'])
                 // On attribue le destinataire
                 ->setTo('projet.nfactory@gmail.com')
                 // On crée le texte avec la vue
@@ -32,7 +32,7 @@ class MailController extends AbstractController
                     ),
                     'text/html'
                 )
-                ->attach(\Swift_Attachment::fromPath($content['pdf']));
+                ->attach(\Swift_Attachment::fromPath($editForm['pdf']));
             $mailer->send($message);
             return new JsonResponse('mail send', Response::HTTP_OK);
 
