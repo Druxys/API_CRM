@@ -73,10 +73,10 @@ class CompanyController extends AbstractController
     public function edit(Request $request, Company $company = null, EntityManagerInterface $em, ValidatorInterface $validator): Response
     {
         if (!$company) {
-            return new JsonResponse("Contact not found", Response::HTTP_BAD_REQUEST);
+            return new JsonResponse("Company not found", Response::HTTP_BAD_REQUEST);
         }
 
-        $form = $this->createForm(ContactType::class, $company);
+        $form = $this->createForm(CompanyType::class, $company);
         return $this->validAndInsert($request, $form, $validator, $company, $em) ?
             new JsonResponse("Contact updated", Response::HTTP_OK) :
             new JsonResponse("Bad request", Response::HTTP_BAD_REQUEST);
