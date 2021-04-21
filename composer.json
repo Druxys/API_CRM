@@ -7,12 +7,13 @@
         "php": ">=8.0",
         "ext-ctype": "*",
         "ext-iconv": "*",
+        "ext-mysql_xdevapi": "*",
         "doctrine/annotations": "^1.0",
         "doctrine/doctrine-bundle": "^2.3",
         "doctrine/orm": "^2.8",
         "lexik/jwt-authentication-bundle": "^2.11",
-        "phpdocumentor/reflection-docblock": "^5.2",
         "nelmio/cors-bundle": "^2.1",
+        "phpdocumentor/reflection-docblock": "^5.2",
         "sensio/framework-extra-bundle": "^6.1",
         "stof/doctrine-extensions-bundle": "^1.6",
         "symfony/console": "5.2.*",
@@ -24,10 +25,10 @@
         "symfony/property-info": "5.2.*",
         "symfony/security-bundle": "5.2.*",
         "symfony/serializer": "5.2.*",
+        "symfony/swiftmailer-bundle": "^3.5",
         "symfony/twig-bundle": "5.2.*",
         "symfony/validator": "5.2.*",
-        "symfony/yaml": "5.2.*",
-      "ext-mysql_xdevapi": "*"
+        "symfony/yaml": "5.2.*"
     },
     "require-dev": {
         "symfony/maker-bundle": "^1.30"
