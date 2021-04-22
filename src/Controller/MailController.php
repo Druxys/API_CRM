@@ -37,7 +37,6 @@ class MailController extends AbstractController
                 ->attach(\Swift_Attachment::fromPath($content['pdf']));
             $mailer->send($message);
             return new JsonResponse('mail send', Response::HTTP_OK);
-
         }
         return new JsonResponse('bad request', Response::HTTP_BAD_REQUEST);
     }
