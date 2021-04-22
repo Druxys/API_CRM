@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Company;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -16,7 +17,7 @@ class CompanyType extends AbstractType
         $builder
             ->add('email', EmailType::class)
             ->add('phone_number', TextType::class)
-            ->add('prospect', TextType::class)
+            ->add('prospect', CheckboxType::class)
             ->add('name', TextType::class)
             ->add('facturation_adress', TextType::class)
             ->add('adress', TextType::class)
