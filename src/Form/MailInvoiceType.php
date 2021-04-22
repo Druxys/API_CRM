@@ -12,7 +12,7 @@ class MailInvoiceType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('invoice', FileType::class)
+            ->add('attachment', FileType::class)
             ->add('email',TextType::class)
         ;
     }

@@ -19,7 +19,6 @@ class MailController extends AbstractController
 //        $editForm->bind($request);
         $editForm->handleRequest($request);
         $content = (array) json_decode($request->getContent());
-        var_dump($request->getContent());
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             // On crée le message
             $message = (new \Swift_Message('Nouveau contact'))
