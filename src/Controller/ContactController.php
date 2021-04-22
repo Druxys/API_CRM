@@ -13,14 +13,30 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('/contact')]
 class ContactController extends AbstractController
 {
+
+    private function serializeJson($objet){
+        $defaultContext = [
+            AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object, $format, $context) {
+                return $object->getName();
+            },
+        ];
+        $normalizer = new ObjectNormalizer(null, null, null, null, null, null, $defaultContext);
+        $serializer = new Serializer([$normalizer], [new JsonEncoder()]);
+
+        return $serializer->serialize($objet, 'json');
+    }
     /**
-     * @Route("/get", name="Contact", methods={"GET"})
+     * @Route("/get", name="Contact", methods={"POST"})
      * @param ContactRepository $contactRepository
      * @param SerializerInterface $serializer
      * @param Request $request
@@ -32,14 +48,14 @@ class ContactController extends AbstractController
     {
         $filter = [];
         $em = $this->getDoctrine()->getManager();
-        $metadata = $em->getClassMetadata(ContactRepository::class)->getFieldNames();
+        $metadata = $em->getClassMetadata(Contact::class)->getFieldNames();
         $content = (array) json_decode($request->getContent());
         foreach($metadata as $value){
             if (isset($content[$value])){
                 $filter[$value] = $content[$value];
             }
         }
-        return JsonResponse::fromJsonString($serializer->serialize($contactRepository->findBy($filter),"json"),Response::HTTP_OK);
+        return JsonResponse::fromJsonString($this->serializeJson($contactRepository->findBy($filter)),Response::HTTP_OK);
     }
 
     #[Route('/{id}/new', name: 'contact_new', methods: ['POST'])]
