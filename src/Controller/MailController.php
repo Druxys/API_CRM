@@ -18,21 +18,27 @@ class MailController extends AbstractController
         $editForm = $this->createForm(MailInvoiceType::class);
 //        $editForm->bind($request);
         $editForm->handleRequest($request);
-        $content = json_decode($request->getContent(),true);
-        $message = (new \Swift_Message('Nouveau contact'))
-            // On attribue l'expéditeur
-            ->setFrom($content['email'])
-            // On attribue le destinataire
-            ->setTo('projet.nfactory@gmail.com')
-            // On crée le texte avec la vue
-            ->setBody(
-                $this->renderView(
-                    'mail/index.html.twig'
-                ),
-                'text/html'
-            )
-            ->attach(\Swift_Attachment::fromPath($content['pdf']));
-        $mailer->send($message);
-        return new JsonResponse('mail send', Response::HTTP_OK);
+        $content = (array) json_decode($request->getContent());
+        var_dump($editForm->isValid());
+        if ($editForm->isSubmitted() && $editForm->isValid()) {
+            // On crée le message
+            $message = (new \Swift_Message('Nouveau contact'))
+                // On attribue l'expéditeur
+                ->setFrom($content['email'])
+                // On attribue le destinataire
+                ->setTo('projet.nfactory@gmail.com')
+                // On crée le texte avec la vue
+                ->setBody(
+                    $this->renderView(
+                        'mail/index.html.twig'
+                    ),
+                    'text/html'
+                )
+                ->attach(\Swift_Attachment::fromPath($content['pdf']));
+            $mailer->send($message);
+            return new JsonResponse('mail send', Response::HTTP_OK);
+
+        }
+        return new JsonResponse('bad request', Response::HTTP_BAD_REQUEST);
     }
 }
